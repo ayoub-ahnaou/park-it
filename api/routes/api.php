@@ -31,4 +31,5 @@ Route::get('/reservations', [ReservationController::class, 'index'])->middleware
 Route::post('/reservations/{parking}', [ReservationController::class, 'store'])->middleware('auth:sanctum');
 Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->middleware('auth:sanctum');
 Route::put('/reservations/{reservation}', [ReservationController::class, 'update'])->middleware('auth:sanctum');
+Route::put('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->middleware('auth:sanctum');
 Route::delete('/reservations/{reservation}', [ReservationController::class, 'destroy'])->middleware('auth:sanctum');
