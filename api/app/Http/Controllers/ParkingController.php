@@ -38,7 +38,7 @@ class ParkingController extends Controller
      */
     public function show(Parking $parking)
     {
-        // 
+        return response()->json(['parking' => $parking]);
     }
 
     /**
