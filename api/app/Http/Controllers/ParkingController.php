@@ -46,7 +46,16 @@ class ParkingController extends Controller
      */
     public function update(Request $request, Parking $parking)
     {
-        // 
+        $fields = $request->validate([
+            "name" => ['required'],
+            "city" => ['required'],
+            "zone" => ['required'],
+            "places" => ['required', 'integer'],
+            "price" => ['required', 'numeric', 'min:10']
+        ]);
+
+        $parking->update($fields);
+        return response()->json(['parking' => $parking], 203);
     }
 
     /**
