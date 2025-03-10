@@ -10,10 +10,20 @@ class ParkingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $parkings = Parking::all();
-        return response()->json(['parkings' => $parkings], 200);
+        $query = Parking::query();
+        
+        if ($request->has('query')) {
+            $search = strtolower($request->input("query"));
+            $query->whereRaw("LOWER(name) LIKE ?", ["%$search%"])
+                ->orWhereRaw("LOWER(city) LIKE ?", ["%$search%"])
+                ->orWhereRaw("LOWER(zone) LIKE ?", ["%$search%"])
+                ->orWhere("places", intval($search));
+        }
+
+        $parkings = $query->get();
+        return response()->json(["count" => sizeof($parkings), "parkings" => $parkings], 200);
     }
 
     /**
