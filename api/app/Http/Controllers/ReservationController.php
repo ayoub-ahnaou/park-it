@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Parking;
 use App\Models\Reservation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
@@ -31,6 +33,7 @@ class ReservationController extends Controller
 
     public function destroy(Reservation $reservation)
     {
-        // 
+        $reservation->delete();
+        return response()->json(['message' => "reservation deleted with succes"]);
     }
 }
