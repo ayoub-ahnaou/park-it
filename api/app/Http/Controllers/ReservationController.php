@@ -65,7 +65,34 @@ class ReservationController extends Controller
 
     public function update(Request $request, Reservation $reservation)
     {
-        // 
+        $request->validate([
+            'start_date' => 'required|date_format:Y-m-d H:i:s|after:now',
+            'end_date'   => 'required|date_format:Y-m-d H:i:s|after:start_date',
+        ]);
+
+        // check if a reservation is made with the datetime giving bu user
+        // start date: 2025-03-11 20:00:00 & end date: 2025-03-11 23:00:00
+        $isReservationExist = Reservation::where("start_date", ">=", $request->start_date)
+            ->where("end_date", "<=", $request->end_date)
+            ->where("parking_id", $reservation->parking->id)
+            ->first();
+
+        if ($isReservationExist) {
+            if ($reservation->end_date <= $request->end_date && $isReservationExist->id != $reservation->id)
+                return response()->json(["message" => "Choose a date start from {$reservation->end_date} or above"]);
+        }
+
+        $hours = Carbon::parse($request->start_date)->diffInHours(Carbon::parse($request->end_date));
+
+        if ($hours < 1) return response()->json(["message" => "minimum duration required is an hour"]);
+
+        $reservation->update([
+            'start_date' => $request->start_date,
+            'end_date'   => $request->end_date,
+            'price_total' => $reservation->parking->price * $hours,
+        ]);
+
+        return response()->json(["message" => "reservation updated with succes", "reservation" => $reservation], 200);
     }
 
     public function destroy(Reservation $reservation)
