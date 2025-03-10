@@ -19,8 +19,8 @@ class ReservationController extends Controller
     public function store(Request $request, Parking $parking)
     {
         // TODO still need to implement the deletion of reservations expired to give chance to others to reserve a place
-        // $isStillAvailablePlaces = Reservation::where('parking_id', $parking->id)->count();
-        if ($parking->places_disponible == 0) return response()->json(["message" => "Places reached the maximum number in this parking"]);
+        if ($parking->places_disponible == 0 && $parking->plcaes_disponible != null) 
+            return response()->json(["message" => "Places reached the maximum number in this parking"]);
 
         $request->validate([
             'start_date' => 'required|date_format:Y-m-d H:i:s|after:now',
