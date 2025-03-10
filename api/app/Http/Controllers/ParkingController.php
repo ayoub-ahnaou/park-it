@@ -13,7 +13,7 @@ class ParkingController extends Controller
     public function index(Request $request)
     {
         $query = Parking::query();
-        
+
         if ($request->has('query')) {
             $search = strtolower($request->input("query"));
             $query->whereRaw("LOWER(name) LIKE ?", ["%$search%"])
@@ -22,7 +22,9 @@ class ParkingController extends Controller
                 ->orWhere("places", intval($search));
         }
 
-        $parkings = $query->get();
+        $parkings = $query->where("places_disponible", ">", 0)
+            ->Where("places_disponible", "!=", null)
+            ->get();
         return response()->json(["count" => sizeof($parkings), "parkings" => $parkings], 200);
     }
 
