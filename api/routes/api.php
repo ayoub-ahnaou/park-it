@@ -18,7 +18,8 @@ Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::get('/parkings', [ParkingController::class, 'index']);
 
 Route::get('/users', [UserController::class, 'index']);
-Route::get('/users/{user}/reservations', [UserController::class, 'reservations']);
+Route::get('/users/{user}/past-reservations', [UserController::class, 'pastReservations']);
+Route::get('/users/{user}/current-reservations', [UserController::class, 'currentReservations']);
 
 // parking routes
 Route::post('/parkings', [ParkingController::class, 'store']);
