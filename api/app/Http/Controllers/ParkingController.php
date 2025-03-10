@@ -63,6 +63,7 @@ class ParkingController extends Controller
      */
     public function destroy(Parking $parking)
     {
-        // 
+        $parking->delete();
+        return response()->json(['message' => 'parking deleted succefully']);
     }
 }
