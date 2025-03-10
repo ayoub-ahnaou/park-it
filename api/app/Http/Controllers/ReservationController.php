@@ -19,7 +19,7 @@ class ReservationController extends Controller
     public function store(Request $request, Parking $parking)
     {
         // TODO still need to implement the deletion of reservations expired to give chance to others to reserve a place
-        if ($parking->places_disponible == 0 && $parking->plcaes_disponible != null) 
+        if ($parking->places_disponible == 0 && $parking->plcaes_disponible != null)
             return response()->json(["message" => "Places reached the maximum number in this parking"]);
 
         $request->validate([
@@ -93,6 +93,17 @@ class ReservationController extends Controller
         ]);
 
         return response()->json(["message" => "reservation updated with succes", "reservation" => $reservation], 200);
+    }
+
+    public function cancel(Reservation $reservation)
+    {
+        $parking = Parking::find($reservation->parking_id);
+        $parking->places_disponible++;
+        $parking->save();
+
+        $reservation->delete();
+
+        return response()->json(["message" => "reservation canceld succesfully"]);
     }
 
     public function destroy(Reservation $reservation)
