@@ -23,7 +23,7 @@ class ReservationController extends Controller
 
     public function show(Reservation $reservation)
     {
-        // 
+        return response()->json(["reservation" => $reservation]);
     }
 
     public function update(Request $request, Reservation $reservation)
