@@ -21,7 +21,16 @@ class ParkingController extends Controller
      */
     public function store(Request $request)
     {
-        // 
+        $fields = $request->validate([
+            "name" => ['required'],
+            "city" => ['required'],
+            "zone" => ['required'],
+            "places" => ['required', 'integer'],
+            "price" => ['required', 'numeric', 'min:10']
+        ]);
+
+        $parking = Parking::create($fields);
+        return response()->json(['parking' => $parking], 201);
     }
 
     /**
