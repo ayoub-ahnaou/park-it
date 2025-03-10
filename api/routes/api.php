@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ParkingController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,4 +37,12 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::put('/reservations/{reservation}', [ReservationController::class, 'update']);
     Route::put('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel']);
     Route::delete('/reservations/{reservation}', [ReservationController::class, 'destroy']);
+
+    Route::prefix("admin/statistics")->group(function() {
+        Route::get("/", [StatisticsController::class, "overview"]);
+        Route::get("/users", [StatisticsController::class, "users"]);
+        Route::get("/parkings", [StatisticsController::class, "parkings"]);
+        Route::get("/reservations", [StatisticsController::class, "reservations"]);
+        Route::get("/revenue", [StatisticsController::class, "revenue"]);
+    });
 });
