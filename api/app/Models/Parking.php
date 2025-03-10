@@ -13,4 +13,9 @@ class Parking extends Model
         "places",
         "price"
     ];
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }
