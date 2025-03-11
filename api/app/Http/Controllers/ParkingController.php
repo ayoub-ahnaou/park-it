@@ -23,7 +23,7 @@ class ParkingController extends Controller
         }
 
         $parkings = $query->where("places_disponible", ">", 0)
-            ->Where("places_disponible", "!=", null)
+            ->orWhere("places_disponible", null)
             ->get();
         return response()->json(["count" => sizeof($parkings), "parkings" => $parkings], 200);
     }
