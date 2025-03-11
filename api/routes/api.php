@@ -17,7 +17,7 @@ Route::post('/register', [AuthController::class, 'register']);
 // user routes
 Route::get('/parkings', [ParkingController::class, 'index']);
 
-Route::middleware('auth:sanctum')->group(function() {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'index']);
     Route::get('/users/{user}/past-reservations', [UserController::class, 'pastReservations']);
     Route::get('/users/{user}/current-reservations', [UserController::class, 'currentReservations']);
@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/parkings/{parking}', [ParkingController::class, 'show']);
     Route::put('/parkings/{parking}', [ParkingController::class, 'update']);
     Route::delete('/parkings/{parking}', [ParkingController::class, 'destroy']);
-    
+
     // reservation routes
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::post('/reservations/{parking}', [ReservationController::class, 'store']);
@@ -38,11 +38,13 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::put('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel']);
     Route::delete('/reservations/{reservation}', [ReservationController::class, 'destroy']);
 
-    Route::prefix("admin/statistics")->group(function() {
-        Route::get("/", [StatisticsController::class, "overview"]);
-        Route::get("/users", [StatisticsController::class, "users"]);
-        Route::get("/parkings", [StatisticsController::class, "parkings"]);
-        Route::get("/reservations", [StatisticsController::class, "reservations"]);
-        Route::get("/revenue", [StatisticsController::class, "revenue"]);
+    Route::middleware('admin')->group(function () {
+        Route::prefix("admin/statistics")->group(function () {
+            Route::get("/", [StatisticsController::class, "overview"]);
+            Route::get("/users", [StatisticsController::class, "users"]);
+            Route::get("/parkings", [StatisticsController::class, "parkings"]);
+            Route::get("/reservations", [StatisticsController::class, "reservations"]);
+            Route::get("/revenue", [StatisticsController::class, "revenue"]);
+        });
     });
 });
