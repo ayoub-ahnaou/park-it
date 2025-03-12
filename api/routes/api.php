@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // parking routes
     Route::post('/parkings', [ParkingController::class, 'store']);
-    Route::get('/parkings/{parking}', [ParkingController::class, 'show']);
+    Route::get('/parkings/{parking:name}', [ParkingController::class, 'show']);
     Route::put('/parkings/{parking}', [ParkingController::class, 'update']);
     Route::delete('/parkings/{parking}', [ParkingController::class, 'destroy']);
 
