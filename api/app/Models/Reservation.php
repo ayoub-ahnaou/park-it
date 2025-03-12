@@ -14,7 +14,8 @@ class Reservation extends Model
         "end_date",
         "user_id",
         "parking_id",
-        "price_total"
+        "price_total",
+        "status"
     ];
 
     public function user()
