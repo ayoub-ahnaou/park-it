@@ -14,6 +14,11 @@ class Parking extends Model
         "price"
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'name';
+    }
+
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
