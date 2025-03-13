@@ -1,0 +1,1226 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "ParkIt",
+        "description": "Parking api documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api",
+            "description": "local server"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "description": "Register a new user",
+                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "phone",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "1234567890"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdef123456"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "description": "Login an existing user",
+                "operationId": "11f21d9311115567b54be5e8c50fbaee",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Email or password are incorrect"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "description": "Logout the authenticated user",
+                "operationId": "1deead8175ec826e4eff4671de92fbf3",
+                "responses": {
+                    "200": {
+                        "description": "User logged out successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are logged out."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/parkings": {
+            "get": {
+                "tags": [
+                    "Parkings"
+                ],
+                "description": "Get all parkings",
+                "operationId": "234009ee862afaa6e88a956e69474f27",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Search query for filtering parkings by name, city, zone, or places",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Parkings retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "description": "Total number of parkings",
+                                            "type": "integer"
+                                        },
+                                        "parkings": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Parking"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Parkings"
+                ],
+                "description": "Create a new parking",
+                "operationId": "d49d85d136d012aee0ec45fbfdde4eda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "city",
+                                    "zone",
+                                    "places",
+                                    "price"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Parking A"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "New York"
+                                    },
+                                    "zone": {
+                                        "type": "string",
+                                        "example": "Downtown"
+                                    },
+                                    "places": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Parking created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "parking": {
+                                            "$ref": "#/components/schemas/Parking"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/parkings/{parking}": {
+            "get": {
+                "tags": [
+                    "Parkings"
+                ],
+                "description": "Get details of a specific parking",
+                "operationId": "0d24da87d3cb0d3d0f516d0aed786317",
+                "parameters": [
+                    {
+                        "name": "parking",
+                        "in": "path",
+                        "description": "ID of the parking",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Parking details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "parking": {
+                                            "$ref": "#/components/schemas/Parking"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Parking not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Parkings"
+                ],
+                "description": "Update a specific parking",
+                "operationId": "036bf31e17eb4bd258f50e6ff3bbeea3",
+                "parameters": [
+                    {
+                        "name": "parking",
+                        "in": "path",
+                        "description": "ID of the parking",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "city",
+                                    "zone",
+                                    "places",
+                                    "price"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Parking A"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "New York"
+                                    },
+                                    "zone": {
+                                        "type": "string",
+                                        "example": "Downtown"
+                                    },
+                                    "places": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Parking updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "parking": {
+                                            "$ref": "#/components/schemas/Parking"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Parking not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Parkings"
+                ],
+                "description": "Delete a specific parking",
+                "operationId": "46a1523688a13009f401388798bd92a4",
+                "parameters": [
+                    {
+                        "name": "parking",
+                        "in": "path",
+                        "description": "ID of the parking",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Parking deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Parking not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/reservations/{parking}": {
+            "post": {
+                "tags": [
+                    "Reservation"
+                ],
+                "description": "Create a new reservation for a parking",
+                "operationId": "2125b9fe218f048122ee5af7e92c7ab8",
+                "parameters": [
+                    {
+                        "name": "parking",
+                        "in": "path",
+                        "description": "ID of the parking",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "start_date",
+                                    "end_date"
+                                ],
+                                "properties": {
+                                    "start_date": {
+                                        "description": "Start date and time of the reservation",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-03-11 20:00:00"
+                                    },
+                                    "end_date": {
+                                        "description": "End date and time of the reservation",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-03-11 23:00:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Reservation created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "reservation created with success"
+                                        },
+                                        "reservations": {
+                                            "$ref": "#/components/schemas/Reservation"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (e.g., invalid date range or parking full)"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/reservations/{reservation}": {
+            "get": {
+                "tags": [
+                    "Reservation"
+                ],
+                "description": "Get details of a specific reservation",
+                "operationId": "f6cd81735b7c7ca38e28d7a60b732414",
+                "parameters": [
+                    {
+                        "name": "reservation",
+                        "in": "path",
+                        "description": "ID of the reservation",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reservation details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "reservations": {
+                                            "$ref": "#/components/schemas/Reservation"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Reservation not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Reservation"
+                ],
+                "description": "Update a specific reservation",
+                "operationId": "a209f7d25a1ee1938f2ec9fd52172cdb",
+                "parameters": [
+                    {
+                        "name": "reservation",
+                        "in": "path",
+                        "description": "ID of the reservation",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "start_date",
+                                    "end_date"
+                                ],
+                                "properties": {
+                                    "start_date": {
+                                        "description": "Start date and time of the reservation",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-03-11 20:00:00"
+                                    },
+                                    "end_date": {
+                                        "description": "End date and time of the reservation",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-03-11 23:00:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reservation updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "reservation updated with success"
+                                        },
+                                        "reservations": {
+                                            "$ref": "#/components/schemas/Reservation"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (e.g., invalid date range)"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Reservation not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Reservation"
+                ],
+                "description": "Delete a specific reservation",
+                "operationId": "3fa0f83f198cf246fe3ba8da9a5f78cd",
+                "parameters": [
+                    {
+                        "name": "reservation",
+                        "in": "path",
+                        "description": "ID of the reservation",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reservation deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "reservation deleted with success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Reservation not found"
+                    }
+                }
+            }
+        },
+        "/reservations/{reservation}/cancel": {
+            "delete": {
+                "tags": [
+                    "Reservation"
+                ],
+                "description": "Cancel a specific reservation",
+                "operationId": "51e46ff0fe6ed43b5e465a5ee627735b",
+                "parameters": [
+                    {
+                        "name": "reservation",
+                        "in": "path",
+                        "description": "ID of the reservation",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reservation canceled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "reservation canceled successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Reservation not found"
+                    }
+                }
+            }
+        },
+        "/admin/statistics/overview": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "description": "Get an overview of system statistics",
+                "operationId": "57a65ca37e88edf41724be374f01131f",
+                "responses": {
+                    "200": {
+                        "description": "Overview statistics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_users": {
+                                            "description": "Total number of users",
+                                            "type": "integer"
+                                        },
+                                        "total_parkings": {
+                                            "description": "Total number of parkings",
+                                            "type": "integer"
+                                        },
+                                        "total_reservations": {
+                                            "description": "Total number of reservations",
+                                            "type": "integer"
+                                        },
+                                        "revenue": {
+                                            "description": "Total revenue generated",
+                                            "type": "number",
+                                            "format": "float"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/admin/statistics/users": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "description": "Get all users",
+                "operationId": "f84ff9adcb30672ddf80dbdf19c66c9e",
+                "responses": {
+                    "200": {
+                        "description": "Users retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "description": "Total number of users",
+                                            "type": "integer"
+                                        },
+                                        "users": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/User"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/admin/statistics/parkings": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "description": "Get all parking data",
+                "operationId": "5440f40fba184e96428db408aafb3d9d",
+                "responses": {
+                    "200": {
+                        "description": "Parking data retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "parkings": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Parking"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/admin/statistics/reservations": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "description": "Get all reservation data",
+                "operationId": "50000dc4390439ddf09e84b11c7df7c7",
+                "responses": {
+                    "200": {
+                        "description": "Reservation data retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "reservations": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Reservation"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/admin/statistics/revenue": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "description": "Get revenue-related statistics",
+                "operationId": "0279b47606e6c877259ac5029e21be71",
+                "responses": {
+                    "200": {
+                        "description": "Revenue statistics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_revenue": {
+                                            "description": "Total revenue generated",
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "revenue_this_month": {
+                                            "description": "Revenue generated this month",
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "revenue_by_parking": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "parking_id": {
+                                                        "description": "ID of the parking",
+                                                        "type": "integer"
+                                                    },
+                                                    "amount": {
+                                                        "description": "Total revenue for this parking",
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Get the details of the authenticated user",
+                "operationId": "23679253d16f34d2972249751e3631dd",
+                "responses": {
+                    "200": {
+                        "description": "User displayed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/user/past-reservations": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Get past reservations of the authenticated user",
+                "operationId": "290deb5e7dd6d07b1422bc66a1c27a35",
+                "responses": {
+                    "200": {
+                        "description": "Past reservations retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "description": "Number of past reservations",
+                                            "type": "integer"
+                                        },
+                                        "reservations": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Reservation"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/user/current-reservations": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Get current reservations of the authenticated user",
+                "operationId": "ff5dadaced22642543e7277781de0e2a",
+                "responses": {
+                    "200": {
+                        "description": "Current reservations retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "description": "Number of current reservations",
+                                            "type": "integer"
+                                        },
+                                        "reservations": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Reservation"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Parking": {
+                "title": "Parking",
+                "description": "Parking model representing a parking location in the system",
+                "properties": {
+                    "id": {
+                        "description": "Unique identifier for the parking",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "Name of the parking",
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "city": {
+                        "description": "City where the parking is located",
+                        "type": "string"
+                    },
+                    "zone": {
+                        "description": "Zone or area of the parking",
+                        "type": "string"
+                    },
+                    "places": {
+                        "description": "Total number of parking places",
+                        "type": "integer"
+                    },
+                    "places_disponible": {
+                        "description": "Number of available parking places",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "price": {
+                        "description": "Price per parking slot",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "created_at": {
+                        "description": "Timestamp when the parking was created",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Timestamp when the parking was last updated",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Reservation": {
+                "title": "Reservation",
+                "description": "Reservation model representing a reservation in the system",
+                "properties": {
+                    "id": {
+                        "description": "Unique identifier for the reservation",
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "description": "ID of the user who made the reservation",
+                        "type": "integer"
+                    },
+                    "parking_id": {
+                        "description": "ID of the parking associated with the reservation",
+                        "type": "integer"
+                    },
+                    "start_date": {
+                        "description": "Start date and time of the reservation",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "end_date": {
+                        "description": "End date and time of the reservation",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "description": "Status of the reservation (e.g., active, canceled)",
+                        "type": "string"
+                    },
+                    "price_total": {
+                        "description": "Total price of the reservation",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "created_at": {
+                        "description": "Timestamp when the reservation was created",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Timestamp when the reservation was last updated",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "description": "User model representing a user in the system",
+                "properties": {
+                    "id": {
+                        "description": "Unique identifier for the user",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "Name of the user",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Email address of the user (must be unique)",
+                        "type": "string"
+                    },
+                    "password": {
+                        "description": "Password of the user (hashed in the database)",
+                        "type": "string"
+                    },
+                    "phone": {
+                        "description": "Phone number of the user",
+                        "type": "string"
+                    },
+                    "email_verified_at": {
+                        "description": "Timestamp when the email was verified",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "role_id": {
+                        "description": "ID of the role assigned to the user",
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "description": "Timestamp when the user was created",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Timestamp when the user was last updated",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "Authorization",
+                "in": "header",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Parkings",
+            "description": "Parkings"
+        },
+        {
+            "name": "Reservation",
+            "description": "Reservation"
+        },
+        {
+            "name": "Statistics",
+            "description": "Statistics"
+        },
+        {
+            "name": "User",
+            "description": "User"
+        }
+    ]
+}
