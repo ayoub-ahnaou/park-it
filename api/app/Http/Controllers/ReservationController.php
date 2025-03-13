@@ -10,12 +10,64 @@ use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
-    public function index()
-    {
-        $reservations = Reservation::all();
-        return response()->json(['count' => sizeof($reservations), 'reservations' => $reservations], 200);
-    }
-
+    /**
+     * @OA\Post(
+     *     path="/reservations/{parking}",
+     *     tags={"Reservation"},
+     *     description="Create a new reservation for a parking",
+     *     @OA\Parameter(
+     *         name="parking",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the parking",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"start_date", "end_date"},
+     *             @OA\Property(
+     *                 property="start_date",
+     *                 type="string",
+     *                 format="date-time",
+     *                 example="2025-03-11 20:00:00",
+     *                 description="Start date and time of the reservation"
+     *             ),
+     *             @OA\Property(
+     *                 property="end_date",
+     *                 type="string",
+     *                 format="date-time",
+     *                 example="2025-03-11 23:00:00",
+     *                 description="End date and time of the reservation"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Reservation created successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="reservation created with success"
+     *             ),
+     *             @OA\Property(
+     *                 property="reservations",
+     *                 ref="#/components/schemas/Reservation"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request (e.g., invalid date range or parking full)"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
+     */
     public function store(Request $request, Parking $parking)
     {
         // TODO still need to implement the deletion of reservations expired to give chance to others to reserve a place
@@ -58,11 +110,106 @@ class ReservationController extends Controller
         return response()->json(["message" => "reservation created with succes", "reservation" => $reservation], 201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/reservations/{reservation}",
+     *     tags={"Reservation"},
+     *     description="Get details of a specific reservation",
+     *     @OA\Parameter(
+     *         name="reservation",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the reservation",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reservation details retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="reservations",
+     *                 ref="#/components/schemas/Reservation"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Reservation not found"
+     *     )
+     * )
+     */
     public function show(Reservation $reservation)
     {
         return response()->json(["reservation" => $reservation]);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/reservations/{reservation}",
+     *     tags={"Reservation"},
+     *     description="Update a specific reservation",
+     *     @OA\Parameter(
+     *         name="reservation",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the reservation",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"start_date", "end_date"},
+     *             @OA\Property(
+     *                 property="start_date",
+     *                 type="string",
+     *                 format="date-time",
+     *                 example="2025-03-11 20:00:00",
+     *                 description="Start date and time of the reservation"
+     *             ),
+     *             @OA\Property(
+     *                 property="end_date",
+     *                 type="string",
+     *                 format="date-time",
+     *                 example="2025-03-11 23:00:00",
+     *                 description="End date and time of the reservation"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reservation updated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="reservation updated with success"
+     *             ),
+     *             @OA\Property(
+     *                 property="reservations",
+     *                 ref="#/components/schemas/Reservation"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad request (e.g., invalid date range)"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Reservation not found"
+     *     )
+     * )
+     */
     public function update(Request $request, Reservation $reservation)
     {
         $request->validate([
@@ -95,6 +242,40 @@ class ReservationController extends Controller
         return response()->json(["message" => "reservation updated with succes", "reservation" => $reservation], 200);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/reservations/{reservation}/cancel",
+     *     tags={"Reservation"},
+     *     description="Cancel a specific reservation",
+     *     @OA\Parameter(
+     *         name="reservation",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the reservation",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reservation canceled successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="reservation canceled successfully"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Reservation not found"
+     *     )
+     * )
+     */
     public function cancel(Reservation $reservation)
     {
         $parking = Parking::find($reservation->parking_id);
@@ -106,6 +287,40 @@ class ReservationController extends Controller
         return response()->json(["message" => "reservation canceld succesfully"]);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/reservations/{reservation}",
+     *     tags={"Reservation"},
+     *     description="Delete a specific reservation",
+     *     @OA\Parameter(
+     *         name="reservation",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the reservation",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reservation deleted successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="reservation deleted with success"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Reservation not found"
+     *     )
+     * )
+     */
     public function destroy(Reservation $reservation)
     {
         $reservation->delete();
