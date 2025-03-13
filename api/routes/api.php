@@ -28,7 +28,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/parkings/{parking:name}', [ParkingController::class, 'show']);
 
     // reservation routes
-    Route::get('/reservations', [ReservationController::class, 'index']);
     Route::post('/reservations/{parking}', [ReservationController::class, 'store']);
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show']);
     Route::put('/reservations/{reservation}', [ReservationController::class, 'update']);
